@@ -1,0 +1,99 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cciobanu <cciobanu@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/05/13 17:48:49 by cciobanu          #+#    #+#             */
+/*   Updated: 2022/06/24 17:02:40 by cciobanu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "core.h"
+
+char	*ms_charjoin(char *str, char c)
+{
+	char	*res;
+	int		i;
+
+	res = malloc(sizeof(*res) * ft_strlen(str) + 2);
+	if (!res)
+		return (NULL);
+	i = -1;
+	while (str[++i])
+		res[i] = str[i];
+	res[i] = c;
+	res[++i] = '\0';
+	return (res);
+}
+
+char	*ms_getfromenvp(char *str)
+{
+	t_plist	*lst;
+	char	*tmp;
+	char	*res;
+	int		i;
+
+	tmp = malloc(sizeof(*tmp));
+	res = malloc(sizeof(*tmp));
+	if (!tmp || !res)
+		return (NULL);
+	tmp[0] = '\0';
+	res[0] = '\0';
+	lst = g_main -> envplist;
+	i = -1;
+	while (str[++i] && (ft_isalnum(str[i]) || str[i] == '_'))
+		tmp = ms_charjoin(tmp, str[i]);
+	while (lst)
+	{
+		if (ft_strlen(tmp) == ft_strlen(lst -> key)
+			&& !ft_strncmp(tmp, lst -> key, ft_strlen(tmp)))
+			return (ft_strexpend(res, lst -> value, FALSE));
+		lst = lst -> next;
+	}
+	return (res);
+}
+
+char	**ms_lsttoarr(t_plist *envplist)
+{
+	int		lstlen;
+	t_plist	*start;
+	char	**result;
+	int		i;
+
+	lstlen = 0;
+	start = envplist;
+	while (envplist)
+	{
+		lstlen++;
+		envplist = envplist -> next;
+	}
+	result = malloc(sizeof(*result) * (lstlen + 1));
+	i = 0;
+	while (start)
+	{
+		result[i++] = ft_strexpend(ft_strdup(start -> key), \
+			ft_strjoin("=", start->value), TRUE);
+		start = start -> next;
+	}
+	result[i] = NULL;
+	return (result);
+}
+
+// char	**ms_appendtoarr(char **arr, char *str)
+// {
+// 	char	**tmp;
+// 	int		i;
+// 	int		len;
+
+// 	len = ms_arraylen(arr);
+// 	tmp = malloc(sizeof(*tmp) * len + 2);
+// 	i = -1;
+// 	while (arr[++i])
+// 		tmp[i] = arr[i];
+// 	tmp[i++] = str;
+// 	tmp[i] = NULL;
+// 	free(arr);
+// 	return (tmp);
+// }
